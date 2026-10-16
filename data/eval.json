@@ -1,0 +1,17 @@
+[
+  { "query": "mind-bending heist set inside dreams", "expected": ["Inception"] },
+  { "query": "hopeful prison drama about friendship", "expected": ["The Shawshank Redemption"] },
+  { "query": "Miyazaki", "expected": ["Spirited Away"] },
+  { "query": "quirky Wes Anderson comedy", "expected": ["The Grand Budapest Hotel"] },
+  { "query": "jazz pianist falls in love in Los Angeles", "expected": ["La La Land"] },
+  { "query": "poor family infiltrates a rich household", "expected": ["Parasite"] },
+  { "query": "astronauts searching for a new home for humanity", "expected": ["Interstellar"] },
+  { "query": "something about toys that come alive", "expected": ["Toy Story"] },
+  { "query": "multiverse adventure with a laundromat owner", "expected": ["Everything Everywhere All at Once"] },
+  { "query": "relentless chase in a desert wasteland", "expected": ["Mad Max: Fury Road"] },
+  { "query": "mafia family and a reluctant heir", "expected": ["The Godfather"] },
+  { "query": "teen comedy about buying booze before graduation", "expected": ["Superbad"] },
+  { "query": "scary movie with social commentary", "expected": ["Get Out"] },
+  { "query": "drummer with a cruel perfectionist teacher", "expected": ["Whiplash"] },
+  { "query": "Batman versus the Joker", "expected": ["The Dark Knight"] }
+]
