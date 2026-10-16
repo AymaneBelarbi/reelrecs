@@ -1,0 +1,154 @@
+:root {
+  --brand: #284b63;
+  --brand-light: #416e8d;
+  --bg: #f6f8fa;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+main {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1 {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 700;
+  color: var(--brand);
+  text-align: center;
+  font-size: 2.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.tagline {
+  text-align: center;
+  color: #4a5966;
+  margin-top: 0;
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 240px;
+  margin: 1.5rem 0 1rem;
+}
+
+.msg {
+  max-width: 85%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.msg.user {
+  align-self: flex-end;
+  background: var(--brand);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+.msg.bot {
+  align-self: flex-start;
+  background: #fff;
+  border: 1px solid #dde3e8;
+  border-bottom-left-radius: 4px;
+}
+
+.msg.pending { color: #52606c; font-style: italic; }
+.msg.error { border-color: #d9534f; color: #a02622; }
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 1rem;
+}
+
+.suggestions button {
+  background: #fff;
+  color: var(--brand);
+  border: 1px solid var(--brand);
+  border-radius: 999px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.suggestions button:hover { background: #eaf1f6; }
+
+form {
+  border: solid 2px var(--brand);
+  display: flex;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+input,
+form button {
+  padding: 10px 15px;
+}
+
+input {
+  font-size: 1.15rem;
+  flex: 1;
+  border: none;
+}
+
+/* Visible keyboard focus (WCAG 2.4.7): outline the whole form when the input is focused. */
+form:focus-within {
+  outline: 3px solid var(--brand-light);
+  outline-offset: 2px;
+}
+input:focus { outline: none; }
+
+button:focus-visible {
+  outline: 3px solid var(--brand-light);
+  outline-offset: 2px;
+}
+
+form button {
+  color: #fff;
+  line-height: 0;
+  background-color: var(--brand);
+  border: none;
+  cursor: pointer;
+}
+
+form button:hover:not(:disabled) { background-color: var(--brand-light); }
+form button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.icon { width: 1.75rem; height: 1.75rem; vertical-align: middle; }
+
+.sources {
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid #e6ebef;
+  font-size: 0.8rem;
+  color: #4a5966;
+}
+
+.notice {
+  font-size: 0.85rem;
+  color: #4a5966;
+  text-align: center;
+  background: #eaf1f6;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 0.5rem 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; scroll-behavior: auto !important; }
+}
