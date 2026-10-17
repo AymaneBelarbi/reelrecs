@@ -1,7 +1,7 @@
 {
   "name": "reelrecs",
   "version": "1.0.0",
-  "description": "ReelRecs: a production-style hybrid RAG chatbot (dense + keyword search, RRF fusion, LLM reranking, grounded citations)",
+  "description": "ReelRecs: a hybrid RAG movie chatbot (dense + keyword search, RRF fusion, LLM reranking, cited answers)",
   "type": "module",
   "engines": {
     "node": ">=22"
@@ -31,5 +31,5 @@
   },
   "license": "MIT",
   "author": "Aymane",
-  "private": "true"
+  "private": true
 }
