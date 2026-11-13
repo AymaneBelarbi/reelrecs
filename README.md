@@ -6,7 +6,7 @@ A movie-recommendation chatbot that demonstrates a **hybrid retrieval-augmented 
 
 | Area | State |
 | --- | --- |
-| Unit and HTTP tests (17, offline, with injected fakes) | Passing |
+| Unit and HTTP tests (20, offline, with injected fakes) | Passing |
 | Production build, `npm audit` | Passing, 0 vulnerabilities |
 | End-to-end run against live OpenAI + Supabase | **Not yet recorded in this repo** |
 | `hybrid_search` SQL function | Reviewed, **not yet covered by an automated test** |
@@ -50,10 +50,11 @@ flowchart LR
 ### Reliability and security
 
 - **Graceful degradation:** if query rewrite, embedding or rerank fails, the request still succeeds (keyword-only search, or fused order). Each degradation is reported in `meta.degraded`. The relevance gate depends on the reranker: with `RERANK_ENABLED=false`, or if reranking fails, results are not score-filtered.
-- **Timeouts and retries:** OpenAI calls use retries with backoff and a timeout; the search call has an abort timeout.
+- **Timeouts and retries:** model calls go through LangChain.js (`ChatOpenAI`, `OpenAIEmbeddings`) with retries, backoff and a timeout; the search call has an abort timeout.
 - **Input handling:** zod validation, 64 kb body limit, conversation history trimmed to the last 10 messages, per-IP rate limiting, `helmet` headers, request IDs validated before logging, keyword input reduced to `[a-z0-9]` tokens so it cannot inject tsquery operators.
 - **Secrets:** API keys exist only on the server. The database table is closed to anonymous clients (RLS on, grants revoked); the server uses the service-role key.
 - **Operability:** structured JSON logs with per-stage timings, `/health` and `/ready`, graceful shutdown, Docker image with healthcheck.
+- **Tracing:** with `LANGSMITH_TRACING=true`, each chat request is one LangSmith trace: rewrite, embed, `hybrid_search` (logged as a retriever with its documents), rerank and answer appear as child runs with inputs, outputs, latency and token usage. `npm run eval` traces the same way.
 
 ## Known limitations
 
@@ -66,7 +67,7 @@ flowchart LR
 ## Data and privacy
 
 - The app stores no conversations and sets no cookies; chat history lives in the browser tab only.
-- Each question is sent to the configured AI provider (OpenAI by default) to produce embeddings and answers. If you deploy this for others, choose an EU region for Supabase, review the provider's data-processing terms, and update this section and the logging behaviour to match.
+- Each question is sent to the configured AI provider (OpenAI by default) to produce embeddings and answers. If you deploy this for others, choose an EU region for Supabase, review the provider's data-processing terms, and update this section and the logging behaviour to match. With `LANGSMITH_TRACING=true`, questions, retrieved movie texts and answers are also sent to LangSmith; leave it off for real users unless that is covered by your terms.
 - The interface tells users they are talking to an AI.
 - No third-party fonts or CDNs are loaded by the frontend.
 
@@ -76,7 +77,7 @@ Semantic form controls with labels, a live-region conversation log, visible keyb
 
 ## Tech stack
 
-Vanilla JS + Vite · Node 22 + Express · OpenAI (embeddings, chat) · Supabase Postgres with pgvector and full-text search · pino · zod · Docker · GitHub Actions
+Vanilla JS + Vite · Node 22 + Express · LangChain.js with OpenAI (embeddings, chat, structured output) · LangSmith · Supabase Postgres with pgvector and full-text search · pino · zod · Docker · GitHub Actions
 
 ## Getting started
 

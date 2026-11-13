@@ -1,3 +1,4 @@
+import { traceable } from 'langsmith/traceable';
 import { parseCitations, timed } from './lib/utils.js';
 
 export const NO_MATCH_REPLY =
@@ -9,7 +10,7 @@ export const NO_MATCH_REPLY =
  * Dependencies are injected so the whole flow is unit-testable without network access.
  */
 export function createPipeline({ retriever, reranker, generator, config, logger }) {
-  return async function run({ message, history = [] }) {
+  async function run({ message, history = [] }) {
     const timings = {};
     const degraded = [];
 
@@ -67,5 +68,7 @@ export function createPipeline({ retriever, reranker, generator, config, logger 
     }));
 
     return { reply, sources, meta };
-  };
+  }
+
+  return traceable(run, { name: 'reelrecs', run_type: 'chain' });
 }

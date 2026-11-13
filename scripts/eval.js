@@ -1,17 +1,18 @@
 // Retrieval evaluation: compares dense-only, keyword-only, hybrid and hybrid+rerank
 // on data/eval.json. Reports hit@1, hit@3 and MRR. Usage: npm run eval
 import { readFile } from 'node:fs/promises';
-import OpenAI from 'openai';
+import { awaitAllCallbacks } from '@langchain/core/callbacks/promises';
 import { createClient } from '@supabase/supabase-js';
 import { loadConfig } from '../server/config.js';
+import { createModels } from '../server/models.js';
 import { createRetriever } from '../server/retrieval.js';
 import { createReranker } from '../server/rerank.js';
 
 const config = loadConfig();
-const openai = new OpenAI({ apiKey: config.OPENAI_API_KEY, maxRetries: config.OPENAI_MAX_RETRIES });
+const models = createModels(config);
 const supabase = createClient(config.SUPABASE_URL, config.SUPABASE_SERVICE_KEY, { auth: { persistSession: false } });
-const retriever = createRetriever({ openai, supabase, config });
-const rerank = createReranker({ openai, config });
+const retriever = createRetriever({ models, supabase, config });
+const rerank = createReranker({ models });
 
 const cases = JSON.parse(await readFile(new URL('../data/eval.json', import.meta.url), 'utf8'));
 
@@ -37,3 +38,4 @@ for (const [name, fn] of Object.entries(modes)) {
   rows.push({ mode: name, 'hit@1': (hit1 / n).toFixed(2), 'hit@3': (hit3 / n).toFixed(2), MRR: (mrr / n).toFixed(2) });
 }
 console.table(rows);
+await awaitAllCallbacks();

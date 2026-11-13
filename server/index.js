@@ -1,8 +1,8 @@
-import OpenAI from 'openai';
 import pino from 'pino';
 import { createClient } from '@supabase/supabase-js';
 import { loadConfig } from './config.js';
 import { createApp } from './app.js';
+import { createModels } from './models.js';
 import { createRetriever } from './retrieval.js';
 import { createReranker } from './rerank.js';
 import { createGenerator } from './generate.js';
@@ -17,19 +17,15 @@ try {
 }
 
 const logger = pino({ level: config.LOG_LEVEL });
-const openai = new OpenAI({
-  apiKey: config.OPENAI_API_KEY,
-  maxRetries: config.OPENAI_MAX_RETRIES, // exponential backoff on 429/5xx/network errors
-  timeout: config.OPENAI_TIMEOUT_MS,
-});
+const models = createModels(config);
 const supabase = createClient(config.SUPABASE_URL, config.SUPABASE_SERVICE_KEY, {
   auth: { persistSession: false },
 });
 
 const pipeline = createPipeline({
-  retriever: createRetriever({ openai, supabase, config }),
-  reranker: createReranker({ openai, config }),
-  generator: createGenerator({ openai, config }),
+  retriever: createRetriever({ models, supabase, config }),
+  reranker: createReranker({ models }),
+  generator: createGenerator({ models }),
   config,
   logger,
 });

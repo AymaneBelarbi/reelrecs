@@ -1,16 +1,16 @@
+import { traceable } from 'langsmith/traceable';
 import { LRUCache, buildKeywordQuery } from './lib/utils.js';
 
 /**
  * Hybrid retrieval: dense (pgvector) + sparse (Postgres full-text), fused with
  * Reciprocal Rank Fusion inside the `hybrid_search` SQL function.
  */
-export function createRetriever({ openai, supabase, config, cache = new LRUCache(500) }) {
+export function createRetriever({ models, supabase, config, cache = new LRUCache(500) }) {
   async function embed(text) {
     const key = `${config.EMBEDDING_MODEL}:${text}`;
     const hit = cache.get(key);
     if (hit) return hit;
-    const res = await openai.embeddings.create({ model: config.EMBEDDING_MODEL, input: text });
-    const vector = res.data[0].embedding;
+    const vector = await models.embeddings.embedQuery(text);
     cache.set(key, vector);
     return vector;
   }
@@ -31,5 +31,23 @@ export function createRetriever({ openai, supabase, config, cache = new LRUCache
     return data ?? [];
   }
 
-  return { embed, search };
+  return {
+    embed: traceable(embed, {
+      name: 'embed',
+      run_type: 'embedding',
+      processOutputs: ({ outputs }) => ({ dimensions: outputs.length }),
+    }),
+    search: traceable(search, {
+      name: 'hybrid_search',
+      run_type: 'retriever',
+      processInputs: ({ args: [query, embedding, overrides] }) => ({ query, dense: Boolean(embedding), overrides }),
+      processOutputs: ({ outputs }) => ({
+        documents: outputs.map((r) => ({
+          type: 'Document',
+          page_content: r.content,
+          metadata: { id: r.id, title: r.title, year: r.year, score: r.score },
+        })),
+      }),
+    }),
+  };
 }
